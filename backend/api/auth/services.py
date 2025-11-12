@@ -1,5 +1,5 @@
-from passlib.context import CryptContext
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import authenticate
 from django.contrib.auth.signals import user_logged_in
 from .repository import AuthRepository
 
@@ -11,11 +11,6 @@ class AuthService:
 
     def __init__(self):
         self.repository = AuthRepository()
-        self.context = CryptContext(
-            schemes=["pbkdf2_sha256"],
-            default="pbkdf2_sha256",
-            pbkdf2_sha256__default_rounds=50000
-        )
 
     def authenticate_user(self, email: str, password: str, request=None) -> dict:
         """
@@ -34,8 +29,8 @@ class AuthService:
             ValueError: Si la contraseña es incorrecta.
         """
         user = self.repository.get_user_by_email(email)
-
-        if not self.context.verify(password, user.password):
+        
+        if not user.check_password(password):
             raise ValueError("La creadenciales son invalidas")
 
         # Generate JWT tokens

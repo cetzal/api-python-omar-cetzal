@@ -17,19 +17,19 @@ class UserListCreateAPIView(APIView):
             openapi.Parameter(
                 'nombre',
                 openapi.IN_QUERY,
-                description="Filtrar usario por nombre (optional)",
+                description="Filtrar usuario por nombre (optional)",
                 type=openapi.TYPE_STRING
             ),
             openapi.Parameter(
                 'email',
                 openapi.IN_QUERY,
-                description="Filtrar usario por email (optional)",
+                description="Filtrar usuario por email (optional)",
                 type=openapi.TYPE_STRING
             ),
             openapi.Parameter(
                 'activo',
                 openapi.IN_QUERY,
-                description="Filtrar usario por active status (optional)",
+                description="Filtrar usuario por active status (optional)",
                 type=openapi.TYPE_BOOLEAN
             ),
         ],
@@ -46,24 +46,23 @@ class UserListCreateAPIView(APIView):
             201: UserSerializer,
             400: "La peticion no a sido procesada"
         },
-        operation_summary="Crear un nuevo usario",
+        operation_summary="Crear un nuevo usuario",
         operation_description="Crea un nuevo usuario con los datos proporcionados."
     )
     def post(self, request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
-            created_user = self.service.create_user(serializer.validated_data)
-            response_serializer = UserSerializer(created_user)
+            self.service.create_user(serializer.validated_data)
             return Response({
-            "status": "success",
-            "message": f"El usario se ha creado"
-        }, status=status.HTTP_201_CREATED)
+                "status": "success",
+                "message": f"El usuario se ha creado"
+            }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserRetrieveUpdateDestroyAPIView(APIView):
     """
-    Metodos para interactuar con usario en especifico.
+    Metodos para interactuar con usuario en especifico.
     Endpoint: /users/<int:user_id>/
     """
     def __init__(self, **kwargs):

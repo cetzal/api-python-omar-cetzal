@@ -32,7 +32,15 @@ class UserRepository:
         return queryset.order_by('id')
 
     def create_user(self, validated_data):
-        return User.objects.create_user(**validated_data)
+        password = validated_data.pop('password', None)
+        
+        user = User.objects.create_user(**validated_data)
+        
+        if password:
+            user.set_password(password)
+            user.save()
+        
+        return user
 
     def get_user_by_id(self, user_id):
         return get_object_or_404(User, id=user_id)
