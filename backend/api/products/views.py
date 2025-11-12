@@ -140,3 +140,57 @@ class ProductRetrieveUpdateDestroyAPIView(APIView):
         product = self.service.get_product_by_id(product_id)
         serializer = ProductSerializer(product)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+    @swagger_auto_schema(
+        operation_summary="Actualización parcial de un producto",
+        operation_description=(
+            "Permite modificar parcialmente los campos de un producto existente mediante su ID.\n\n"
+            "Ejemplo de cuerpo JSON:\n"
+            "```\n"
+            "{\n"
+            "  \"nombre\": \"actualizar nombre\",\n"
+            "  \"precio\": 199.99\n"
+            "}\n"
+            "```"
+        ),
+        manual_parameters=[
+            openapi.Parameter(
+                'product_id',
+                openapi.IN_PATH,
+                description="ID del producto que se desea actualizar parcialmente",
+                type=openapi.TYPE_INTEGER,
+                required=True
+            ),
+        ],
+        request_body=ProductUpdateSerializer,
+        responses={
+            200: openapi.Response(
+                description="Producto actualizado correctamente",
+                examples={
+                    "application/json": {
+                        "status": "success",
+                        "message": "El producto ha sido actualizado correctamente"
+                    }
+                }
+            ),
+            400: openapi.Response(
+                description="Datos inválidos o error de validación"
+            ),
+            404: openapi.Response(
+                description="Producto no encontrado"
+            ),
+        },
+    )
+    def patch(self, request, product_id):
+        """Actualiza parcialmente un producto existente."""
+        serializer = ProductUpdateSerializer(data=request.data, partial=True)
+        if serializer.is_valid():
+            updated_product = self.service.update_product(product_id, serializer.validated_data)
+            response_serializer = ProductSerializer(updated_product)
+            return Response({
+                "status": "success",
+                "message": "El producto ha sido actualizado correctamente",
+            }, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
