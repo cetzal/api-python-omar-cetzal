@@ -194,3 +194,45 @@ class ProductRetrieveUpdateDestroyAPIView(APIView):
             }, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    @swagger_auto_schema(
+        operation_summary="Eliminar producto por ID",
+        operation_description=(
+            "Elimina un producto existente identificado por su ID.\n\n"
+            "Ejemplo de uso:\n"
+            "`DELETE /products/5/` eliminará el producto con ID 5."
+        ),
+        manual_parameters=[
+            openapi.Parameter(
+                'product_id',
+                openapi.IN_PATH,
+                description="ID del producto que se desea eliminar",
+                type=openapi.TYPE_INTEGER,
+                required=True
+            ),
+        ],
+        responses={
+            200: openapi.Response(
+                description="Producto eliminado correctamente",
+                examples={
+                    "application/json": {
+                        "status": "success",
+                        "message": "El producto con ID 5 ha sido eliminado correctamente."
+                    }
+                }
+            ),
+            404: openapi.Response(
+                description="Producto no encontrado"
+            ),
+        },
+    )
+    def delete(self, request, product_id):
+        """Elimina un producto por su ID."""
+        self.service.delete_product(product_id)
+        return Response(
+            {
+                "status": "success",
+                "message": f"El producto con ID {product_id} ha sido eliminado correctamente."
+            },
+            status=status.HTTP_200_OK
+        )
