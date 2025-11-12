@@ -18,7 +18,7 @@ RUN pip install --no-cache-dir -r requirements.txt || true
 COPY . .
 
 # Hace el entrypoint ejecutable
-RUN chmod +x /app/install.sh
+#RUN chmod +x /app/install.sh
 
 # Comando por defecto (ejecuta migraciones y crea el usuario demo antes de iniciar el servidor)
 # ENTRYPOINT ["/app/install.sh"]
