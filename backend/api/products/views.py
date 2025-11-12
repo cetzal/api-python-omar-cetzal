@@ -103,3 +103,40 @@ class ProductListCreateAPIView(APIView):
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+class ProductRetrieveUpdateDestroyAPIView(APIView):
+    """
+    Métodos para interactuar con un producto en específico.
+    Endpoint: /products/<int:product_id>/
+    """
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.service = ProductService()
+
+    @swagger_auto_schema(
+        operation_summary="Obtener producto por ID",
+        operation_description="Recupera la información completa de un producto existente mediante su ID.",
+        manual_parameters=[
+            openapi.Parameter(
+                'product_id',
+                openapi.IN_PATH,
+                description="ID del producto que se desea consultar",
+                type=openapi.TYPE_INTEGER,
+                required=True
+            ),
+        ],
+        responses={
+            200: openapi.Response(
+                description="Producto obtenido correctamente",
+                schema=ProductSerializer()
+            ),
+            404: openapi.Response(
+                description="Producto no encontrado"
+            ),
+        },
+    )
+    def get(self, request, product_id):
+        """Obtiene un producto por su ID."""
+        product = self.service.get_product_by_id(product_id)
+        serializer = ProductSerializer(product)
+        return Response(serializer.data, status=status.HTTP_200_OK)
