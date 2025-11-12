@@ -3,12 +3,15 @@ from drf_yasg import openapi
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from .serializers import ProductSerializer, ProductUpdateSerializer
 from .services import ProductService
 
 
 class ProductListCreateAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.service = ProductService()
@@ -109,6 +112,8 @@ class ProductRetrieveUpdateDestroyAPIView(APIView):
     Métodos para interactuar con un producto en específico.
     Endpoint: /products/<int:product_id>/
     """
+    permission_classes = [IsAuthenticated]
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.service = ProductService()

@@ -3,11 +3,15 @@ from drf_yasg import openapi
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from .serializers import UserSerializer,UserUpdateSerializer
 from .services import UserService
 
 class UserListCreateAPIView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.service = UserService()
@@ -65,6 +69,8 @@ class UserRetrieveUpdateDestroyAPIView(APIView):
     Metodos para interactuar con usuario en especifico.
     Endpoint: /users/<int:user_id>/
     """
+    permission_classes = [IsAuthenticated]
+    
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.service = UserService()
