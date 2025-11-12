@@ -33,6 +33,7 @@ services:
       - db
     networks:
       - app_network
+    restart: always
 
   # frontend:
   #   build:
