@@ -17,5 +17,9 @@ RUN pip install --no-cache-dir -r requirements.txt || true
 # Copia el código del proyecto
 COPY . .
 
-# Comando por defecto (puede sobreescribirse desde docker-compose)
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Hace el entrypoint ejecutable
+RUN chmod +x /app/install.sh
+
+# Comando por defecto (ejecuta migraciones y crea el usuario demo antes de iniciar el servidor)
+# ENTRYPOINT ["/app/install.sh"]
+# CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
