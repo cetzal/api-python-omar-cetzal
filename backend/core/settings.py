@@ -15,6 +15,7 @@ import os
 import sys
 from os.path import join, dirname
 from dotenv import load_dotenv
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -54,9 +55,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'drf_yasg',
     'api.users',
     'api.products',
+    'api.auth',
 ]
 
 AUTH_USER_MODEL = 'users.User'
@@ -147,3 +150,38 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+SIMPLE_JWT = {
+
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=int(os.getenv('JWT_ACCESS_TOKEN_MINUTES', 60))),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=int(os.getenv('JWT_REFRESH_TOKEN_DAYS', 30))),
+
+    'ROTATE_REFRESH_TOKENS': os.getenv('JWT_ROTATE_REFRESH_TOKENS', 'False').lower() == 'true',
+    'BLACKLIST_AFTER_ROTATION': os.getenv('JWT_BLACKLIST_AFTER_ROTATION', 'True').lower() == 'true',
+
+    'UPDATE_LAST_LOGIN': os.getenv('JWT_UPDATE_LAST_LOGIN', 'False').lower() == 'true',
+
+    'ALGORITHM': os.getenv('JWT_ALGORITHM', 'HS256'),
+    'SIGNING_KEY': os.getenv('JWT_SECRET_KEY', os.getenv('DJANGO_SECRET_KEY')),
+    'VERIFYING_KEY': os.getenv('JWT_VERIFYING_KEY', None),
+    'AUDIENCE': os.getenv('JWT_AUDIENCE', None),
+    'ISSUER': os.getenv('JWT_ISSUER', None),
+
+    'AUTH_HEADER_TYPES': (os.getenv('JWT_AUTH_HEADER_TYPE', 'Bearer'),),
+    'AUTH_HEADER_NAME': os.getenv('JWT_AUTH_HEADER_NAME', 'HTTP_AUTHORIZATION'),
+
+    'USER_ID_FIELD': os.getenv('JWT_USER_ID_FIELD', 'id'),
+    'USER_ID_CLAIM': os.getenv('JWT_USER_ID_CLAIM', 'user_id'),
+    'USER_AUTHENTICATION_RULE': 'rest_framework_simplejwt.authentication.default_user_authentication_rule',
+
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
+
+    'JTI_CLAIM': 'jti',
+
+    'LEEWAY': int(os.getenv('JWT_LEEWAY', 30)),  # tolerancia de segundos en validación exp
+
+    'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
+    'SLIDING_TOKEN_LIFETIME': timedelta(days=int(os.getenv('JWT_SLIDING_TOKEN_DAYS', 30))),
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=int(os.getenv('JWT_SLIDING_REFRESH_DAYS', 1))),
+}

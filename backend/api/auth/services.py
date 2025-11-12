@@ -1,0 +1,52 @@
+from passlib.context import CryptContext
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth.signals import user_logged_in
+from .repository import AuthRepository
+
+
+class AuthService:
+    """
+    La clase AuthService encapsula la lógica empresarial para las operaciones de autenticación.
+    """
+
+    def __init__(self):
+        self.repository = AuthRepository()
+        self.context = CryptContext(
+            schemes=["pbkdf2_sha256"],
+            default="pbkdf2_sha256",
+            pbkdf2_sha256__default_rounds=50000
+        )
+
+    def authenticate_user(self, email: str, password: str, request=None) -> dict:
+        """
+        Autentica un usuario con email y contraseña.
+
+        Args:
+            email (str): El email del usuario.
+            password (str): La contraseña del usuario.
+            request: El objeto de solicitud para señales.
+
+        Returns:
+            dict: Un diccionario con los detalles del usuario y tokens si la autenticación es exitosa.
+
+        Raises:
+            User.DoesNotExist: Si no se encuentra un usuario con el email proporcionado.
+            ValueError: Si la contraseña es incorrecta.
+        """
+        user = self.repository.get_user_by_email(email)
+
+        if not self.context.verify(password, user.password):
+            raise ValueError("La creadenciales son invalidas")
+
+        # Generate JWT tokens
+        refresh = RefreshToken.for_user(user)
+        user_details = {
+            'name': f"{user.first_name} {user.last_name}".strip() or user.username,
+            'access': str(refresh.access_token),
+            'refresh': str(refresh),
+        }
+
+        if request:
+            user_logged_in.send(sender=user.__class__, request=request, user=user)
+
+        return user_details
