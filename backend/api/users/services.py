@@ -13,4 +13,10 @@ class UserService:
     def get_all_users(self, filters=None):
         """Obtener todo los usarios"""
         return self.repository.get_all_users(filters)
+    
+    def create_user(self, validated_data):
+        """
+        funcion encarga de regitrar usario o validaciones necesarios
+        """
+        return self.repository.create_user(validated_data)
 

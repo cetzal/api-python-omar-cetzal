@@ -20,10 +20,10 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Agregar la carpeta "module" al PYTHONPATH
-MODULE_DIR = os.path.join(BASE_DIR, 'module')
-if MODULE_DIR not in sys.path:
-    sys.path.insert(0, MODULE_DIR)
+# # Agregar la carpeta "module" al PYTHONPATH
+# MODULE_DIR = os.path.join(BASE_DIR, 'module')
+# if MODULE_DIR not in sys.path:
+#     sys.path.insert(0, MODULE_DIR)
 
 dotenv_path = join(BASE_DIR, '.env')
 
@@ -55,7 +55,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'drf_yasg',
+    'api.users',
 ]
+
+AUTH_USER_MODEL = 'users.User'
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
