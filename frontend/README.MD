@@ -1,0 +1,1 @@
+# esta pensado para alojar el frontend
