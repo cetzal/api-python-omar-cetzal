@@ -50,3 +50,21 @@ class AuthService:
             user_logged_in.send(sender=user.__class__, request=request, user=user)
 
         return user_details
+
+    def logout_user(self, refresh_token: str) -> bool:
+        """
+        Invalidates a refresh token by blacklisting it.
+
+        Args:
+            refresh_token (str): The refresh token to blacklist.
+
+        Returns:
+            bool: True if the token was successfully blacklisted, False otherwise.
+        """
+        try:
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return True
+        except Exception:
+            # If token is already blacklisted or invalid, return False
+            return False
