@@ -33,3 +33,15 @@ class UserSerializer(serializers.ModelSerializer):
             # forzando campos requerido para el api
             'email': {'required': True},
         }
+
+class UserUpdateSerializer(UserSerializer):
+    """
+    Serializer para actualización de usuarios (PUT/PATCH).
+    Hereda de UserSerializer pero hace opcional los campos.
+    """
+    class Meta(UserSerializer.Meta):
+        extra_kwargs = {
+            **UserSerializer.Meta.extra_kwargs,
+            'password': {'write_only': True, 'required': False},  
+            'email': {'required': False},  
+        }

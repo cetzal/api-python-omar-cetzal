@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from .serializers import UserSerializer
+from .serializers import UserSerializer,UserUpdateSerializer
 from .services import UserService
 
 class UserListCreateAPIView(APIView):
@@ -96,4 +96,34 @@ class UserRetrieveUpdateDestroyAPIView(APIView):
         serializer = UserSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @swagger_auto_schema(
+        operation_summary="Actualizar usuario por ID",
+        operation_description="Actualiza los datos de un usuario específico. Requiere todos los campos del serializer.",
+        request_body=UserUpdateSerializer,
+        responses={
+            200: UserUpdateSerializer,
+            400: openapi.Response(description="Errores de validación"),
+            404: openapi.Response(description="Usuario no encontrado"),
+        },
+        manual_parameters=[
+            openapi.Parameter(
+                "user_id",
+                openapi.IN_PATH,
+                description="ID del usuario a actualizar",
+                type=openapi.TYPE_INTEGER,
+                required=True
+            )
+        ],
+    )
+    def put(self, request, user_id):
+        """Actualiza completamente un usuario existente."""
+        serializer = UserUpdateSerializer(data=request.data, partial=True)
+        if serializer.is_valid():
+            updated_user = self.service.update_user(user_id, serializer.validated_data)
+            if not updated_user:
+                return Response({"status": "error", "message": "Usuario no encontrado."}, status=status.HTTP_404_NOT_FOUND)
+            response_serializer = UserSerializer(updated_user)
+            return Response({"status": "succes", "message": f"El usuario ha sido actualizado"}, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
