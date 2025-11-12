@@ -11,9 +11,24 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+import sys
+from os.path import join, dirname
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+# Agregar la carpeta "module" al PYTHONPATH
+MODULE_DIR = os.path.join(BASE_DIR, 'module')
+if MODULE_DIR not in sys.path:
+    sys.path.insert(0, MODULE_DIR)
+
+dotenv_path = join(BASE_DIR, '.env')
+
+# reload vars
+load_dotenv(dotenv_path)
 
 
 # Quick-start development settings - unsuitable for production
@@ -74,8 +89,12 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': os.getenv('DJANGO_DB_ENGINE'),
+        'NAME': os.getenv('DJANGO_DB_NAME'),
+        'USER': os.getenv('DJANGO_DB_USER'),
+        'PASSWORD': os.getenv('DJANGO_DB_PASSWORD'),
+        'HOST': os.getenv('DJANGO_DB_HOST'),
+        'PORT': os.getenv('DJANGO_DB_PORT'),
     }
 }
 
