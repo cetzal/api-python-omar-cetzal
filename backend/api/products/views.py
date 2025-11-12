@@ -52,4 +52,54 @@ class ProductListCreateAPIView(APIView):
         products = self.service.get_all_products(request.query_params)
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data)
+    
+    @swagger_auto_schema(
+        operation_summary="Crear un nuevo producto",
+        operation_description=(
+            "Crea un nuevo producto en el sistema con los datos proporcionados. "
+            "Valida los campos requeridos antes de almacenarlos."
+        ),
+        request_body=ProductSerializer,
+        responses={
+            201: openapi.Response(
+                description="Producto creado correctamente.",
+                schema=ProductSerializer(),
+                examples={
+                    "application/json": {
+                        "status": "success",
+                        "message": "El producto se ha creado correctamente",
+                        "data": {
+                            "id": 1,
+                            "nombre": "Laptop Dell XPS 13",
+                            "precio": "25999.00",
+                            "stock": 15,
+                            "activo": True,
+                            "created": "2025-11-12T04:25:13Z",
+                            "last_update": "2025-11-12T04:25:13Z",
+                        },
+                    }
+                },
+            ),
+            400: openapi.Response(
+                description="Error de validación en los datos enviados."
+            ),
+        },
+    )
+
+    def post(self, request):
+        """
+        Crea un nuevo producto con los datos proporcionados en el cuerpo de la solicitud.
+        """
+        serializer = ProductSerializer(data=request.data)
+        if serializer.is_valid():
+            created_product = self.service.create_product(serializer.validated_data)
+            response_serializer = ProductSerializer(created_product)
+            return Response(
+                {
+                    "status": "success",
+                    "message": "El producto se ha creado correctamente",
+                },
+                status=status.HTTP_201_CREATED,
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
