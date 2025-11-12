@@ -126,4 +126,30 @@ class UserRetrieveUpdateDestroyAPIView(APIView):
             return Response({"status": "succes", "message": f"El usuario ha sido actualizado"}, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    @swagger_auto_schema(
+        operation_summary="Eliminar usuario por ID",
+        operation_description="Elimina un usuario existente por su ID y devuelve un mensaje de confirmación.",
+        responses={
+            200: openapi.Response(
+                description="Usuario eliminado correctamente",
+                examples={
+                    "application/json": {
+                        "status": "success",
+                        "message": "El usuario ha sido eliminado correctamente."
+                    }
+                }
+            ),
+            404: openapi.Response(description="Usuario no encontrado"),
+        },
+    )
+    def delete(self, request, user_id):
+        self.service.delete_user(user_id)
+        return Response(
+            {
+                "status": "success",
+                "message": f"El usuario con ID {user_id} ha sido eliminado correctamente."
+            },
+            status=status.HTTP_200_OK
+        )
 
