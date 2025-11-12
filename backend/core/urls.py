@@ -36,5 +36,6 @@ urlpatterns = [
 
     # API endpoints
     path('api/users/', include('api.users.urls')),
+    path('api/products/', include('api.products.urls')),
     
 ]

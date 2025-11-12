@@ -5,10 +5,10 @@ class ProductSerializer(serializers.ModelSerializer):
     """
     Maneja la validación y transformación de datos de producto entre la API (JSON)
     """
-    nombre = serializers.CharField(source='nombre')
-    precio = serializers.DecimalField(source='precio', max_digits=10, decimal_places=2)
-    stock = serializers.IntegerField(source='stock')
-    activo = serializers.BooleanField(source='activo', default=True)
+    nombre = serializers.CharField()
+    precio = serializers.DecimalField( max_digits=10, decimal_places=2)
+    stock = serializers.IntegerField()
+    activo = serializers.BooleanField(default=True)
     created = serializers.DateTimeField(source='created_at', read_only=True)
 
     class Meta:
