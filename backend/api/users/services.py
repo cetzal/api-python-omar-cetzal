@@ -16,7 +16,18 @@ class UserService:
     
     def create_user(self, validated_data):
         """
-        funcion encarga de regitrar usario o validaciones necesarios
+        funcion que se encarga de regitrar usario o/y validaciones necesarios
         """
         return self.repository.create_user(validated_data)
+    
+    def get_user_by_id(self, user_id):
+        return self.repository.get_user_by_id(user_id)
+
+    def update_user(self, user_id, validated_data):
+        user_instance = self.repository.get_user_by_id(user_id)
+        return self.repository.update_user(user_instance, validated_data)
+
+    def delete_user(self, user_id):
+        user_instance = self.repository.get_user_by_id(user_id)
+        self.repository.delete_user(user_instance)
 

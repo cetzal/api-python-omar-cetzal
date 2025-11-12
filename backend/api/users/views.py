@@ -61,4 +61,39 @@ class UserListCreateAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class UserRetrieveUpdateDestroyAPIView(APIView):
+    """
+    Metodos para interactuar con usario en especifico.
+    Endpoint: /users/<int:user_id>/
+    """
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.service = UserService()
+
+    @swagger_auto_schema(
+        operation_summary="Obtener usuario por ID",
+        operation_description="Devuelve la información detallada de un usuario específico.",
+        responses={
+            200: UserSerializer,
+            404: openapi.Response(description="Usuario no encontrado")
+        },
+        manual_parameters=[
+            openapi.Parameter(
+                "user_id",
+                openapi.IN_PATH,
+                description="ID del usuario a consultar",
+                type=openapi.TYPE_INTEGER,
+                required=True
+            )
+        ],
+    )
+    def get(self, request, user_id):
+        """Obtiene un usuario por su ID."""
+        user = self.service.get_user_by_id(user_id)
+        if not user:
+            return Response({"status": "error", "message": f"Usuario no encontrado."}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = UserSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
